@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Master Kegiatan - Catatan Harian{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-black text-slate-800 tracking-tight">Master Kegiatan</h1>
+            <p class="text-slate-500 font-medium">Kelola daftar jenis kegiatan yang akan dilakukan.</p>
+        </div>
+        <a href="/kegiatan/tambah" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center justify-center gap-2">
+            <span>+</span> Tambah Kegiatan
+        </a>
+    </div>
+
+    <!-- Filter & Search -->
+    <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+        <form action="/kegiatan" method="GET" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-grow relative">
+                <input type="text" name="search" value="{{ request.args.get('search', '') }}" placeholder="Cari nama kegiatan..." 
+                       class="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">🔍</span>
+            </div>
+            <select name="status" class="w-full md:w-48 px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium text-slate-600">
+                <option value="">Semua Status</option>
+                <option value="aktif" {% if request.args.get('status') == 'aktif' %}selected{% endif %}>✅ Aktif</option>
+                <option value="nonaktif" {% if request.args.get('status') == 'nonaktif' %}selected{% endif %}>❌ Nonaktif</option>
+            </select>
+            <button type="submit" class="bg-slate-800 text-white px-8 py-3 rounded-2xl font-bold hover:bg-slate-900 transition-all active:scale-95">
+                Cari
+            </button>
+        </form>
+    </div>
+
+    <!-- Content Table / Grid -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- Desktop Table -->
+        <div class="hidden lg:block overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="px-8 py-4 font-bold text-slate-600 text-sm uppercase tracking-wider">No</th>
+                        <th class="px-8 py-4 font-bold text-slate-600 text-sm uppercase tracking-wider">Nama Kegiatan</th>
+                        <th class="px-8 py-4 font-bold text-slate-600 text-sm uppercase tracking-wider">Deskripsi</th>
+                        <th class="px-8 py-4 font-bold text-slate-600 text-sm uppercase tracking-wider">Status</th>
+                        <th class="px-8 py-4 font-bold text-slate-600 text-sm uppercase tracking-wider text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for item in data %}
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-8 py-4 text-slate-400 font-medium">{{ loop.index }}</td>
+                        <td class="px-8 py-4">
+                            <span class="font-bold text-slate-800">{{ item.nama_kegiatan }}</span>
+                        </td>
+                        <td class="px-8 py-4">
+                            <span class="text-slate-500 text-sm italic">{{ item.deskripsi or 'Tidak ada deskripsi' }}</span>
+                        </td>
+                        <td class="px-8 py-4">
+                            {% if item.status == 'aktif' %}
+                                <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-100">AKTIF</span>
+                            {% else %}
+                                <span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-xs font-bold border border-slate-200">NONAKTIF</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-4 text-right space-x-2">
+                            <a href="/kegiatan/{{ item.id_kegiatan }}/edit" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all shadow-sm" title="Edit">
+                                ✏️
+                            </a>
+                            <button onclick="confirmHapus('/kegiatan/{{ item.id_kegiatan }}/hapus', '{{ item.nama_kegiatan }}')" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Hapus">
+                                🗑️
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-8 py-16 text-center">
+                            <div class="flex flex-col items-center">
+                                <span class="text-6xl mb-4">📭</span>
+                                <p class="text-slate-500 font-medium">Belum ada data kegiatan yang ditemukan.</p>
+                                <a href="/kegiatan/tambah" class="mt-4 text-indigo-600 font-bold hover:underline">Tambah kegiatan pertama?</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile/Tablet Card Grid -->
+        <div class="lg:hidden p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for item in data %}
+            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">{{ item.nama_kegiatan }}</h3>
+                        {% if item.status == 'aktif' %}
+                            <span class="inline-block mt-1 bg-emerald-50 text-emerald-700 px-3 py-0.5 rounded-full text-[10px] font-bold border border-emerald-100 uppercase">AKTIF</span>
+                        {% else %}
+                            <span class="inline-block mt-1 bg-slate-200 text-slate-600 px-3 py-0.5 rounded-full text-[10px] font-bold border border-slate-300 uppercase">NONAKTIF</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="/kegiatan/{{ item.id_kegiatan }}/edit" class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">✏️</a>
+                        <button onclick="confirmHapus('/kegiatan/{{ item.id_kegiatan }}/hapus', '{{ item.nama_kegiatan }}')" class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm text-red-500">🗑️</button>
+                    </div>
+                </div>
+                <p class="text-slate-500 text-sm line-clamp-2 italic">{{ item.deskripsi or 'Tidak ada deskripsi' }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include "components/modal_hapus.html" %}
+{% endblock %}

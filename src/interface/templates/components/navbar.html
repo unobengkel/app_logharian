@@ -1,0 +1,58 @@
+<nav class="bg-indigo-700 text-white shadow-xl sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-20">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-3 group">
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-sm group-hover:bg-white/30 transition-all">
+                    <span class="text-3xl">📋</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-xl tracking-tight leading-none">LogHarian</span>
+                    <span class="text-[10px] uppercase tracking-widest opacity-70">Work Activity System</span>
+                </div>
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center space-x-1">
+                <a href="/" class="px-4 py-2 rounded-xl hover:bg-white/10 transition font-medium {% if request.path == '/' %}bg-white/20{% endif %}">Dashboard</a>
+                <a href="/kegiatan" class="px-4 py-2 rounded-xl hover:bg-white/10 transition font-medium {% if request.path.startswith('/kegiatan') %}bg-white/20{% endif %}">Master Kegiatan</a>
+                <a href="/rencana" class="px-4 py-2 rounded-xl hover:bg-white/10 transition font-medium {% if request.path.startswith('/rencana') %}bg-white/20{% endif %}">Rencana Kerja</a>
+                <a href="/catatan" class="px-4 py-2 rounded-xl hover:bg-white/10 transition font-medium {% if request.path.startswith('/catatan') %}bg-white/20{% endif %}">Catatan Harian</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="menu-toggle" class="lg:hidden p-2 rounded-xl hover:bg-white/10 transition-all border border-white/20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-indigo-800 border-t border-indigo-600 overflow-hidden transition-all duration-300">
+        <div class="px-4 py-6 space-y-2">
+            <a href="/" class="block px-4 py-3 rounded-xl hover:bg-white/10 transition {% if request.path == '/' %}bg-white/20{% endif %}">Dashboard</a>
+            <a href="/kegiatan" class="block px-4 py-3 rounded-xl hover:bg-white/10 transition {% if request.path.startswith('/kegiatan') %}bg-white/20{% endif %}">Master Kegiatan</a>
+            <a href="/rencana" class="block px-4 py-3 rounded-xl hover:bg-white/10 transition {% if request.path.startswith('/rencana') %}bg-white/20{% endif %}">Rencana Kerja</a>
+            <a href="/catatan" class="block px-4 py-3 rounded-xl hover:bg-white/10 transition {% if request.path.startswith('/catatan') %}bg-white/20{% endif %}">Catatan Harian</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+
+    menuToggle.addEventListener('click', () => {
+        const isOpen = !mobileMenu.classList.contains('hidden');
+        if (isOpen) {
+            mobileMenu.classList.add('hidden');
+            menuIcon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+        } else {
+            mobileMenu.classList.remove('hidden');
+            menuIcon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+        }
+    });
+</script>
